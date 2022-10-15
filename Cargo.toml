@@ -10,4 +10,3 @@ repository = "https://github.com/Blaron/Rust-adventurer"
 
 [dependencies]
 rand = "0.8.5"
-ncurses = "5.101.0"
