@@ -10,3 +10,5 @@ repository = "https://github.com/Blaron/Rust-adventurer"
 
 [dependencies]
 rand = "0.8.5"
+terminal-menu = "2.0.4"
+colored = "2.0.0"

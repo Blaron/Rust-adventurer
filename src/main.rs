@@ -1,14 +1,14 @@
 use rand::Rng;
 use std::io;
 use std::io::prelude::*;
+use colored::*;
 
-
-// Player class type:
-// enum Pclass {
-//     MAGE,
-//     WARRIOR,
-//     ARCHER,
-// }
+ //Player class type:
+ enum Pclass {
+     MAGE,
+     WARRIOR,
+     ARCHER,
+ }
 
 // layer structure :
 #[allow(dead_code)]
@@ -19,52 +19,97 @@ struct Player {
     max_vida: i32,
     vida: i32,
     level: u16,
-    //clase: Pclass,
+    clase: Pclass,
 }
 
 #[allow(unused_variables)]
 fn main(){
     
     let mut hero_name:String = String::new();
-    //let mut hero_class:String = String::new();
-    println!("Bienvendido al mundo aventurero, dime tu nombre.");
+    #[allow(unused_assignments)]
+    let mut hero_class:String = String::new();
+    println!("{}","Welcome to Rust adventure".cyan());
+    println!("Enter the name of the {}","Hero".red());
     let b1_name = std::io::stdin().read_line(&mut hero_name).unwrap();
+    println!();
+    use terminal_menu::{menu,label,button,run,mut_menu};
+    let menu = menu(vec![
+        label(""),
+        label("Select the class for the Hero"),
+        label("----------------------"),
+        label("Use wasd or arrow keys"),
+        label("[Enter] To select"),
+        label("[q] or [esc] to exit"),
+        label(""),
+        button("Warrior"),
+        button("Mage"),
+        button("Archer"),
+    ]);
+    run(&menu);
+    hero_class = mut_menu(&menu).selected_item_name().to_string();
     // println!("Perfecto {}. ¿ Qué clase eres ?",hero_class);
     // let b2_clase:usize = std::io::stdin().read_line(&mut hero_class).unwrap();
-    println!("Ahora parte hacia tu aventura, este es tus stats iniciales:");
-    
+    println!("Get ready for the adventure, Look your current stats:");
     #[allow(unused_mut)]
     let mut jugador = Player{
         name:hero_name,
-        ataque: 2,
-        defensa: 1,
-        max_vida: 3,
-        vida: 3,
+        ataque: {
+            match hero_class.as_str() {
+                "Warrior" => 2,
+                "Mage" => 5,
+                "Archer" => 3,
+                _ => 1,
+            }
+        },
+        defensa: {
+            match hero_class.as_str() {
+                "Warrior" => 5,
+                "Mage" => 1,
+                "Archer" => 2,
+                _ => 1,
+            }
+        },
+        max_vida: {
+            match hero_class.as_str() {
+                "Warrior" => 6,
+                "Mage" => 3,
+                "Archer" => 3,
+                _ => 1,
+            }
+        },
+        vida: {
+            match hero_class.as_str() {
+                "Warrior" => 6,
+                "Mage" => 3,
+                "Archer" => 3,
+                _ => 1,
+            }
+        },
         level: 1,
-        //clase: get_class(hero_class),
+        clase: get_class(hero_class),
     };
-    println!("name: {}",jugador.name);
-    println!("atack: {}",jugador.ataque);
-    println!("defense: {}",jugador.defensa);
-    println!("max_health: {}",jugador.max_vida);
-    println!("health: {}",jugador.vida);
-    println!("Lvl: {}",jugador.level);
-    //println!("class: {}",&b1_name);
+    println!("{}{}","attack: ".cyan(),jugador.ataque);
+    println!("{}{}","defense: ".cyan(),jugador.defensa);
+    println!("{}{}","Max Health: ".cyan(),jugador.max_vida);
+    println!("{}{}","Health: ".cyan(),jugador.vida);
+    println!("{}{}","Lvl: ".cyan(),jugador.level);
+    println!("{}{}","Class: ".cyan(),mut_menu(&menu).selected_item_name().to_string());
     pause();
-    println!("Es hora de la aventura, {}. ",jugador.name);
+    println!("{}{}","Now go to fight ".bold().red(),jugador.name.yellow());
+    println!();
     play_run(jugador);
     
 
 }
 
-// fn get_class(tipe: String) -> Pclass{
-//     match tipe.as_str() {
-//         "warrior"=>Pclass::WARRIOR,
-//         "mage"=>Pclass::MAGE,
-//         "archer"=>Pclass::ARCHER,
-//         _ =>Pclass::WARRIOR,
-//     }
-// }
+ fn get_class(tipe: String) -> Pclass{
+     match tipe.as_str() {
+         "Warrior"=>Pclass::WARRIOR,
+         "Mage"=>Pclass::MAGE,
+         "Archer"=>Pclass::ARCHER,
+         _ =>Pclass::WARRIOR,
+     }
+ }
 
 
 // UPDATE STATS
@@ -106,9 +151,9 @@ fn add_level(current_level:u16,set_level:u16) -> u16 {
 }
 
 fn end_run(jugador:Player){
-    println!("A finalizado la vida del aventurero: {}",jugador.name);
-    println!("El aventurero llegó al nivel: {}",jugador.level);
-    println!("Prueba de nuevo para llegar al nivel maximo [50]");
+    println!("The adventurer's {} life is over...",jugador.name);
+    println!("The adventurer reached level: {}",jugador.level);
+    println!("Try again to reach the maximum level [50]");
 }
 
 fn pause() {
@@ -180,22 +225,22 @@ fn combat_enemy(mut jugador:Player){
                 max_vida: new_max_vida,
                 vida: new_vida,
                 level: {jugador.level},
-                //clase: Pclass::WARRIOR,
+                clase: Pclass::WARRIOR,
                 };
             
             let start_combat:u32 = rand::thread_rng().gen_range(1..10);
             
-            println!("Te enfrentas al siguiente enemigo:");
-            println!("name: {} comun",enemy.name);
-            println!("atack: {}",enemy.ataque);
-            println!("defense: {}",enemy.defensa);
-            println!("max_health: {}",enemy.max_vida);
-            println!("health: {}",enemy.vida);
-            println!("Lvl: {}",enemy.level);
+            println!("You face the following enemy:");
+            println!();
+            println!("{}{}","attack: ".cyan(),enemy.ataque);
+            println!("{}{}","defense: ".cyan(),enemy.defensa);
+            println!("{}{}","Max Health: ".cyan(),enemy.max_vida);
+            println!("{}{}","Health: ".cyan(),enemy.vida);
+            println!("{}{}","Level: ".cyan(),enemy.level);
             pause();
             
             if start_combat <= 5 {
-                println!("Empiezas atacando al enemigo.");
+                println!("You start by attacking the enemy.");
                 pause();
                 
                 // Start the combat.
@@ -203,19 +248,20 @@ fn combat_enemy(mut jugador:Player){
                     
                     if enemy.defensa >= jugador.ataque{
                         enemy.defensa -= jugador.ataque;
-                        println!("{} consiguió bloquear el ataque",enemy.name);
+                        println!("{} succeeded in blocking the attack",enemy.name);
                         pause();
                     } else {
-                    println!("Atacas al enemigo, infligiendo: {} puntos al enemigo.",jugador.ataque);
+                    println!("You attack the enemy, inflicting: {} points to the enemy.",jugador.ataque);
                     
                     enemy.vida = remove_life(enemy.vida, jugador.ataque);
                     
-                    println!("El enemigo ahora tiene {} puntos de vida.", enemy.vida);
+                    println!("The enemy now has {} hit points.", enemy.vida);
                     pause();
                     }
                     if enemy.vida <= 0 {
-                        println!("El enemigo ha muerto.");
-                        println!("Tu defensa a aumentado");
+                        println!("The enemy is dead.");                        
+                        println!("Your defense has increased.");
+                        println!();
                         
                         jugador.defensa += 1;
                         break;
@@ -223,30 +269,30 @@ fn combat_enemy(mut jugador:Player){
                         pause();
                         if jugador.defensa >= enemy.ataque {
                             jugador.defensa -= enemy.ataque;
-                            println!("{} consiguió bloquear el ataque",jugador.name);
+                            println!("{} succeeded in blocking the attack",jugador.name);
                             pause();
                         } else {
                                                 
-                        println!("El enemigo te ataca, te ha infligido {} puntos de daño.",enemy.ataque);
+                        println!("The enemy attacks you, he has inflicted {} points of damage.",enemy.ataque);
                         
                         jugador.vida = remove_life(jugador.vida, enemy.ataque);
                         
-                        println!("{} hora tiene {} puntos de vida.",jugador.name, jugador.vida);
+                        println!("{} hour has {} life points.",jugador.name, jugador.vida);
                         pause();
                     }
                         if jugador.vida <= 0 {
-                            println!("Has muerto");
+                            println!("You died");
                             break;
                         }
                         pause();
                     
                 }
                 if jugador.vida <= 0 {
-                    println!("Has muerto");
+                    println!("You died");
                     end_run(jugador);
                 } else{
-                    println!("Has sobrevivido al combate con {} puntos de vida",jugador.vida);
-                    println!("Has subido un nivel por el combate");
+                    println!("You have survived combat with {} hit points.",jugador.vida);
+                    println!("You have gained one level in combat.");
                     pause();
                     
                     jugador.max_vida = add_max_life(jugador.max_vida);
@@ -254,16 +300,17 @@ fn combat_enemy(mut jugador:Player){
                     jugador.ataque = add_attack(jugador.ataque, rand::thread_rng().gen_range(1..3));
                     jugador.level += 1;
                     
-                    println!("Ahora tienes de vida maxima: {} puntos", jugador.max_vida);
-                    println!("Ahora tienes: {} puntos de ataque.",jugador.ataque);
-                    println!("Ahora tienes: {} puntos de defensa.",jugador.defensa);
-                    println!("Ahora tienes: {} puntos de nivel.",jugador.level);
+                    println!("{}{}{}","You now have maximum life: ".cyan(), jugador.max_vida," points.".cyan());
+                    println!("{}{}{}","You now have: ".cyan(),jugador.ataque," attack points.".cyan());
+                    println!("{}{}{}","You now have: ".cyan(),jugador.defensa," defense points.".cyan());
+                    println!("{}{}","You now have the level: ".cyan(),jugador.level);
+                    println!();
                     pause();
                     play_run(jugador);
                     
                 }
             } else {
-                println!("¡ El enemigo empezó atacando !");
+                println!("The enemy started attacking !");
                 pause();
                 
                 // Start the combat.
@@ -271,19 +318,19 @@ fn combat_enemy(mut jugador:Player){
                     
                     if jugador.defensa >= enemy.ataque {
                         jugador.defensa -= enemy.ataque;
-                        println!("{} consiguió bloquear el ataque",jugador.name);
+                        println!("{} succeeded in blocking the attack",jugador.name);
                         pause();
                     } else {
                         
-                        println!("El enemigo te ataca, te ha infligido {} puntos de daño.",enemy.ataque);
+                        println!("The enemy attacks you, he has inflicted {} points of damage.",enemy.ataque);
                         
                         jugador.vida = remove_life(jugador.vida, enemy.ataque);
                         
-                        println!("{} ahora tiene {} puntos de vida.",jugador.name, jugador.vida);
+                        println!("{} hour has {} life points.",jugador.name, jugador.vida);
                         pause();
                     }
                     if jugador.vida <= 0 {
-                        println!("Has muerto.");
+                        println!("You died.");
                         pause();
                         break;
                     }
@@ -291,20 +338,21 @@ fn combat_enemy(mut jugador:Player){
                     
                     if enemy.defensa >= jugador.ataque{
                         enemy.defensa -= jugador.ataque;
-                        println!("{} consiguió bloquear el ataque",enemy.name);
+                        println!("{} succeeded in blocking the attack",enemy.name);
                         pause();
                     } else {
                         
-                        println!("Atacas al enemigo, infligiendo: {} puntos al enemigo.",jugador.ataque);
+                        println!("You attack the enemy, inflicting: {} points to the enemy.",jugador.ataque);
                         
                         enemy.vida = remove_life(enemy.vida, jugador.ataque);
                         
-                        println!("El enemigo ahora tiene {} puntos de vida.", enemy.vida);
+                        println!("The enemy now has {} hit points.", enemy.vida);
                         pause();
                     }
                     if enemy.vida <= 0 {
-                        println!("El enemigo ha muerto.");
-                        println!("Tu defensa a aumentado");
+                        println!("The enemy is dead.");
+                        println!("Your defense has increased.");
+                        println!();
                         pause();
                         jugador.defensa += 1;
                         break;
@@ -312,21 +360,22 @@ fn combat_enemy(mut jugador:Player){
                 }
                 
                 if jugador.vida <= 0 {
-                    println!("Has muerto");
+                    println!("You died.");
                     end_run(jugador);
                 } else{
-                    println!("Has sobrevivido al combate con {} puntos de vida",jugador.vida);
-                    println!("Has subido un nivel por el combate");
+                    println!("You have survived combat with {} hit points.",jugador.vida);
+                    println!("You have gained one level in combat.");
                     pause();
                     
                     jugador.max_vida = add_max_life(jugador.max_vida);
                     jugador.defensa = add_defense(jugador.defensa, rand::thread_rng().gen_range(1..3));
                     jugador.ataque = add_attack(jugador.ataque, rand::thread_rng().gen_range(1..3));
                     jugador.level += 1;
-                    println!("Ahora tienes de vida maxima: {} puntos", jugador.max_vida);
-                    println!("Ahora tienes: {} puntos de ataque.",jugador.ataque);
-                    println!("Ahora tienes: {} puntos de defensa.",jugador.defensa);
-                    println!("Ahora tienes: {} puntos de nivel.",jugador.level);
+                    println!("{}{}{}","You now have maximum life: ".cyan(), jugador.max_vida," points.".cyan());
+                    println!("{}{}{}","You now have: ".cyan(),jugador.ataque," attack points.".cyan());
+                    println!("{}{}{}","You now have: ".cyan(),jugador.defensa," defense points.".cyan());
+                    println!("{}{}","You now have the level: ".cyan(),jugador.level);
+                    println!();
                     play_run(jugador);
                     
                 }
@@ -343,50 +392,50 @@ fn play_run(mut jugador:Player){
     
     match rand_way.as_str() {
         "camino" => {
-            println!("Te encuentras en un camino, empiezas a recorrerlo.");
+            println!("You find yourself on a path, you start walking it.");
             pause();
             let num_rand:u32= rand::thread_rng().gen_range(0..50);
             
             if num_rand < 35{
-                println!("Recorres varios kilometros por el camino sin problemas.");
+                println!("You travel several kilometers along the road without any problems.");
                 pause();
                 play_run(jugador);
             } else {
-                println!("¡ Oh no !, te encuentras un enemigo.");
+                println!("Oh no ! You find an enemy.");
                 pause();
                 combat_enemy(jugador);
             }
         },
         "ciudad" => {
-            println!("Has encontrado una ciudad y decides entrar. Te diriges a una posada para descansar.");
-            println!("Recuperas todos tus puntos de vida");
+            println!("You have found a city and decide to enter. You head to an inn to rest.");
+            println!("Recover all your life points.");
             pause();
             jugador.vida = jugador.max_vida;
             play_run(jugador);
         },
         "bosque" => {
-            println!("Te encuentras en un frondoso bosque, parece algo peligroso; continuas...");
+            println!("You find yourself in a lush forest, it seems somewhat dangerous; you continue...");
             let num_rand:u32= rand::thread_rng().gen_range(0..50);
             if num_rand < 25{
-                println!("Atraviesas el bosque sin problemas.");
+                println!("You cross the forest without any problems.");
                 pause();
                 play_run(jugador);
             } else if num_rand >= 25 && num_rand <= 49 {
-                println!("¡ Oh no !, te encuentras un enemigo.");
+                println!("Oh no ! You find an enemy.");
                 pause();
                 combat_enemy(jugador);
             } else {
-                println!("Mientras caminabas distraido, escuchas crujir las ramas del arbol mas cercano, con la mala suerte de que te cae encima y mueres estrujado.");
+                println!("While walking distracted, you hear the branches of the nearest tree crackle, with the bad luck that it falls on you and you are crushed to death.");
                 pause();
                 end_run(jugador);
             }
         },
         "enemigo" => {
-            println!("¡ Un enemigo, a luchar !");
+            println!("One enemy, fight back!");
             pause();
             combat_enemy(jugador);
         },
-        _=>println!("Te has perdido... mejor volver."),
+        _=>println!("You got lost... better go back."),
     }
     
     
